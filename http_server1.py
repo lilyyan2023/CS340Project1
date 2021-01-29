@@ -58,7 +58,7 @@ def server1(port):
             finally:
                 connection_socket.close()
                 break
-server1(2005)
+# server1(2005)
 
 
 
