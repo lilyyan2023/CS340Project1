@@ -13,18 +13,29 @@ def server2(port):
     #listen, not specifying the backlog
     accept_socket.listen(5)
     #initialize list of open connections
-    open_connections = []
+    # open_connections = []
+    # list of sockets waiting to read
+    read_list = []
+    # add accept_socket to read list
+    read_list.append(accept_socket)
+    # initialize an output
+    outputs = []
+    # initialize a dictionary
+    message_queues = {}
     while True:
-        # list of sockets waiting to read
-        read_list = []
-        # add accept_socket to read list
-        read_list.append(accept_socket)
-        # initialize an output
-        outputs = []
+        # # list of sockets waiting to read
+        # read_list = []
+        # # add accept_socket to read list
+        # read_list.append(accept_socket)
+        # # initialize an output
+        # outputs = []
         # call select
         readable, writable, exceptional = select.select(read_list, outputs, read_list)
-        # initialize a dictionary
-        message_queues = {}
+        print(readable)
+        print(writable)
+        print(exceptional)
+
+
         # iterate readable sockets on the read list
 
         for r in readable:
@@ -36,14 +47,15 @@ def server2(port):
                 #change it to blocking state?
                 connection_socket.setblocking(0)
                 # add to list of open_connections
-                open_connections.append(connection_socket)
+                read_list.append(connection_socket)
                 print(connection_socket)
                 message_queues[connection_socket] = queue.Queue()
                 print(message_queues)
             else:
                 # connection_socket, client_address = r.accept()
                 data = r.recv(1024)
-                print(data)
+                # print(data)
+                print(message_queues)
                 if data:
                     message_queues[r].put(data)
                     if r not in outputs:
@@ -57,17 +69,20 @@ def server2(port):
 
         for w in writable:
             try:
-                next_msg = message_queue[w].get_nowait()
-                print(next_msg)
+                next_msg = message_queues[w].get_nowait()
+                # print(next_msg)
 
             except queue.Empty:
                 outputs.remove(w)
             else:
 
                 data_str = next_msg.decode('utf-8')
+                print(data_str)
                 if data_str.endswith("\r\n\r\n"):
+                    print("debug")
                     request = data_str.split(' ')
                     path = request[1]
+                    print(path)
                 try:
                     file = open(path[1:])
                     print(file)
@@ -87,12 +102,13 @@ def server2(port):
                     w.send(("HTTP/1.1 404 Not Found\r\n").encode('utf-8'))
 
                 finally:
-                    w.close()
-                    open_connections.remove(w)
+                    # w.close()
+                    print("remove")
+                    read_list.remove(w)
                     break
                 w.send(next_msg)
         for e in exceptional:
-            inputs.remove(e)
+            read_list.remove(e)
             if e in outputs:
                 outputs.remove(e)
             e.close()
@@ -124,6 +140,6 @@ def server2(port):
                 #     connection_socket.close()
                 #     open_connections.remove(connection_socket)
                 #     break
-server2(7030)
+server2(8001)
 
 
