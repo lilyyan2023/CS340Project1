@@ -102,11 +102,13 @@ def server2(port):
                     w.send(("HTTP/1.1 404 Not Found\r\n\r\n").encode('utf-8'))
 
                 finally:
+                    print("close")
                     # w.close()
                     print("remove")
                     read_list.remove(w)
                     break
                 w.send(next_msg)
+                w.close()
         for e in exceptional:
             read_list.remove(e)
             if e in outputs:
