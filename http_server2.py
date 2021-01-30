@@ -2,7 +2,7 @@ import socket
 import sys
 import select
 import queue
-
+port = int(sys.argv[1])
 def server2(port):
     # create a TCP socket
     accept_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -89,17 +89,17 @@ def server2(port):
                     if path.endswith(".htm") or path.endswith(".html"):
                         print("sending 200")
                         w.send(("HTTP/1.1 200 OK\r\n").encode('utf-8'))
-                        w.send(("Content-Type: text/html; charset=UTF-8\r\n").encode('utf-8'))
+                        w.send(("Content-Type: text/html; charset=UTF-8\r\n\r\n").encode('utf-8'))
                         w.send(file.read().encode('utf-8'))
                         file.close()
                     else:
                         print("sending 403")
-                        w.send(("HTTP/1.1 403 Forbidden\r\n").encode('utf-8'))
+                        w.send(("HTTP/1.1 403 Forbidden\r\n\r\n").encode('utf-8'))
                         file.close()
                 except Exception as e:
                     print(e)
                     print("sending 404")
-                    w.send(("HTTP/1.1 404 Not Found\r\n").encode('utf-8'))
+                    w.send(("HTTP/1.1 404 Not Found\r\n\r\n").encode('utf-8'))
 
                 finally:
                     # w.close()
@@ -140,6 +140,6 @@ def server2(port):
                 #     connection_socket.close()
                 #     open_connections.remove(connection_socket)
                 #     break
-server2(8001)
+server2(port)
 
 
