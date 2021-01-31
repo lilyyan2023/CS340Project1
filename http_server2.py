@@ -22,7 +22,7 @@ def server2(port):
     outputs = []
     # initialize a dictionary
     message_queues = {}
-    while True:
+    while read_list:
         # # list of sockets waiting to read
         # read_list = []
         # # add accept_socket to read list
@@ -30,11 +30,9 @@ def server2(port):
         # # initialize an output
         # outputs = []
         # call select
+        print("selecting")
         readable, writable, exceptional = select.select(read_list, outputs, read_list)
         print(readable)
-        print(writable)
-        print(exceptional)
-
 
         # iterate readable sockets on the read list
 
@@ -50,21 +48,22 @@ def server2(port):
                 read_list.append(connection_socket)
                 print(connection_socket)
                 message_queues[connection_socket] = queue.Queue()
-                print(message_queues)
             else:
                 # connection_socket, client_address = r.accept()
                 data = r.recv(1024)
                 # print(data)
-                print(message_queues)
                 if data:
+                    print("the data that is stuck is "+str(data))
                     message_queues[r].put(data)
                     if r not in outputs:
                         outputs.append(r)
                 else:
-                    if r in outputs:
-                        outputs.remove(r)
-                    read_list.remove(r)
+                    #if r in outputs:
+                        #outputs.remove(r)
+                    #read_list.remove(r)
+                    print("closing")
                     r.close()
+                    print("closing finshi")
                     del message_queues[r]
 
         for w in writable:
@@ -75,17 +74,13 @@ def server2(port):
             except queue.Empty:
                 outputs.remove(w)
             else:
-
                 data_str = next_msg.decode('utf-8')
                 print(data_str)
                 if data_str.endswith("\r\n\r\n"):
-                    print("debug")
                     request = data_str.split(' ')
                     path = request[1]
-                    print(path)
                 try:
                     file = open(path[1:])
-                    print(file)
                     if path.endswith(".htm") or path.endswith(".html"):
                         print("sending 200")
                         w.send(("HTTP/1.1 200 OK\r\n").encode('utf-8'))
@@ -102,14 +97,16 @@ def server2(port):
                     w.send(("HTTP/1.1 404 Not Found\r\n\r\n").encode('utf-8'))
 
                 finally:
-                    print("close")
-                    # w.close()
-                    print("remove")
+                    #print("close")
+                    w.close()
+                    #print("remove")
                     read_list.remove(w)
-                    break
-                w.send(next_msg)
-                w.close()
+                    if w in outputs:
+                        outputs.remove(w)
+                    #break
+                #w.close()
         for e in exceptional:
+            print("exception")
             read_list.remove(e)
             if e in outputs:
                 outputs.remove(e)

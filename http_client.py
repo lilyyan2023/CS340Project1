@@ -16,6 +16,7 @@ def connect(name):
     addr = lst[2]
 
     if name[0:7] != "http://":
+        print(name[0:7])
         errMsg.write('error')
         sys.exit(1)
     else:
