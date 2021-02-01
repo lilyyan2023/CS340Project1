@@ -76,7 +76,7 @@ while(location != "" and redirect_counter<10):
 if(redirect_counter==10):
     print("redirect over 10 times\n",file=sys.stderr)
     sys.exit(10)
-#print(msg,file=sys.stdout)
+print(msg,file=sys.stdout)
 if(int(status) > 400):
     print(status+" Response\n",file=sys.stderr)
     sys.exit([2])
