@@ -39,7 +39,6 @@ def connect(name):
             if line[0] == "Content-Length":
                 content_length = int(line[1])
             if line[0] == "Content-Type":
-                print(line[1])
                 if line[1].split("; ")[0] != "text/html":
                     print("not text html\n",file=sys.stderr)
                     sys.exit(3)
