@@ -3,8 +3,6 @@ import sys
 
 
 input = str(sys.argv[1])
-output = sys.stdout
-errMsg = sys.stderr
 
 def connect(name):
     content = ""
@@ -22,9 +20,9 @@ def connect(name):
 
     if name[0:7] != "http://":
         if name[0:8] == "https://":
-            errMsg.write('https given')
+            print('https given\n',file=sys.stderr)
             sys.exit(5)
-        errMsg.write('Not http protocol')
+        print('Not http protocol\n',file=sys.stderr)
         sys.exit(1)
     else:
         message = ""
@@ -33,7 +31,7 @@ def connect(name):
         sock.sendall(bytes("GET /"+content+ " HTTP/1.1\r\nHost: "+addr+"\r\n\r\n","utf-8"))
         while(message == "" or "\r\n\r\n" not in message):
             response = sock.recv(1024)
-            message += response.decode()
+            message += response.decode('utf-8', 'replace')
         content_length = -1
         lst = message.split("\r\n\r\n")[0].split("\r\n")
         for i in range(0,len(lst)):
@@ -41,8 +39,9 @@ def connect(name):
             if line[0] == "Content-Length":
                 content_length = int(line[1])
             if line[0] == "Content-Type":
+                print(line[1])
                 if line[1].split("; ")[0] != "text/html":
-                    errMsg.write("not text html")
+                    print("not text html\n",file=sys.stderr)
                     sys.exit(3)
         header_length = len(message.split("\r\n\r\n")[0])
         if(content_length != -1):
@@ -51,11 +50,11 @@ def connect(name):
                 if(size > 1024):
                     size = 1024
                 response = sock.recv(size)
-                message += response.decode()
+                message += response.decode('utf-8', 'replace')
         else:
             response = sock.recv(1024)
             while response:
-                message += response.decode()
+                message += response.decode('utf-8', 'replace')
                 response = sock.recv(1024)
         #response = sock.recv(header_length+len("\r\n\r\n"))
         #message += response.decode()
@@ -66,7 +65,7 @@ def connect(name):
                 line = lst[i].split(": ")
                 if line[0] == "Location":
                     location = line[1]
-                    errMsg.write("Redirected to:"+line[1])
+                    print("Redirected to:"+line[1]+"\n",file=sys.stderr)
         return message[header_length+len("\r\n\r\n"):], location,status
         
 
@@ -76,11 +75,11 @@ while(location != "" and redirect_counter<10):
     redirect_counter += 1
     msg,location,status  = connect(location)
 if(redirect_counter==10):
-    errMsg.write("redirect over 10 times")
+    print("redirect over 10 times\n",file=sys.stderr)
     sys.exit(10)
-output.write(msg)
+#print(msg,file=sys.stdout)
 if(int(status) > 400):
-    errMsg.write(status+" Response")
-    sys.exit(2)
+    print(status+" Response\n",file=sys.stderr)
+    sys.exit([2])
 sys.exit(0)
 
