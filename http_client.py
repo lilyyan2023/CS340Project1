@@ -51,10 +51,10 @@ def connect(name):
                 response = sock.recv(size)
                 message += response.decode('utf-8', 'replace')
         else:
-            response = sock.recv(1024)
+            response = sock.recv(1)
             while response:
                 message += response.decode('utf-8', 'replace')
-                response = sock.recv(1024)
+                response = sock.recv(1)
         #response = sock.recv(header_length+len("\r\n\r\n"))
         #message += response.decode()
         location = ""
