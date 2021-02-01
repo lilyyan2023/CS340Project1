@@ -21,40 +21,53 @@ def server3(port):
             if data_str.endswith("\r\n\r\n"):
                 print(data_str)
                 # if a user requests /product url
-                print(data_str.split(' ')[1][:8] == "/product")
+
                 if data_str.split(' ')[1][:8] == "/product":
                     # print(data_str.split(' ')[1].split("=")[1])
                     # content = data_str.split(' ')[1].split("=")[1]
 
-                    if len(data_str.split(' ')[1].split("?"))!= 1 and data_str.split(' ')[1].split("=")[1].split("&")[0].isnumeric():
+                    if len(data_str.split(' ')[1].split("?")) != 1 and data_str.split(' ')[1].split("?")[1] != "":
 
-                        #Split data with ' ', then jump accross "/product" by [10:], and split with "&"
-                        request = data_str.split(' ')[1][10:].split("&")
-                        operands = []
-                        result = 1
-                        #create operands and result
-                        for i in request:
-                            operands.append(i.split("=")[1])
-                            print(operands)
-                            result *= float(i.split("=")[1])
-                        dict = {}
-                        dict["operation"] = "product"
-                        dict["operands"] = operands
-                        # how do we know whether it overflows
-                        if result != float("inf") and result != float("-inf"):
-                            dict["result"] = result
-                        elif result == float("inf"):
-                            dict["result"] = "inf"
-                        else:
-                            dict["result"] = "-inf"
-                        dict_json = json.dumps(dict)
+                        # if :
 
-                        print("sending 200")
-                        connection_socket.send(("HTTP/1.1 200 OK\r\n").encode('utf-8'))
-                        connection_socket.send(("Content-Type: application/json\r\n\r\n").encode('utf-8'))
-                        # do we need to encode?
-                        connection_socket.send(dict_json.encode('utf-8'))
-                    # if after /product, there is nothing or is not a number
+                            #Split data with ' ', then jump accross "/product" by [10:], and split with "&"
+                            request = data_str.split(' ')[1][9:].split("&")
+                            operands = []
+                            result = 1
+
+                            #create operands and result
+                            for i in request:
+                                print(i)
+                                if i.split("=")[1].isnumeric() or i.split("=")[1].replace('.', '', 1).isdigit():
+
+                                    operands.append(i.split("=")[1])
+                                    print(operands)
+                                    result *= float(i.split("=")[1])
+                                else:
+                                    print("sending 400")
+                                    connection_socket.send(("HTTP/1.1 400 Bad Request\r\n\r\n").encode('utf-8'))
+                                    break
+                            dict = {}
+                            dict["operation"] = "product"
+                            dict["operands"] = operands
+                            # how do we know whether it overflows
+                            if result != float("inf") and result != float("-inf"):
+                                dict["result"] = result
+                            elif result == float("inf"):
+                                dict["result"] = "inf"
+                            else:
+                                dict["result"] = "-inf"
+                            dict_json = json.dumps(dict)
+
+                            print("sending 200")
+                            connection_socket.send(("HTTP/1.1 200 OK\r\n").encode('utf-8'))
+                            connection_socket.send(("Content-Type: application/json\r\n\r\n").encode('utf-8'))
+                            # do we need to encode?
+                            connection_socket.send(dict_json.encode('utf-8'))
+                        # if after /product, there is nothing or is not a number
+                        # else:
+                        #     print("sending 400")
+                        #     connection_socket.send(("HTTP/1.1 400 Bad Request\r\n\r\n").encode('utf-8'))
                     else:
                         print("sending 400")
                         connection_socket.send(("HTTP/1.1 400 Bad Request\r\n\r\n").encode('utf-8'))
