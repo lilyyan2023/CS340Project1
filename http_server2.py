@@ -111,7 +111,7 @@ def server2(port):
             if e in outputs:
                 outputs.remove(e)
             e.close()
-            del message_queue[e]
+            del message_queues[e]
 
                 # data_str = data.decode('utf-8')
                 # if data_str.endswith("\r\n\r\n"):
