@@ -28,7 +28,7 @@ def connect(name):
         message = ""
         sock = socket.socket()
         sock.connect((socket.gethostbyname(addr),port))
-        sock.sendall(bytes("GET /"+content+ " HTTP/1.1\r\nHost: "+addr+"\r\n\r\n","utf-8"))
+        sock.sendall(bytes("GET /"+content+ " HTTP/1.0\r\nHost: "+addr+"\r\n\r\n","utf-8"))
         while(message == "" or "\r\n\r\n" not in message):
             response = sock.recv(1024)
             message += response.decode('utf-8', 'replace')
