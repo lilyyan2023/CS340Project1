@@ -34,19 +34,21 @@ def server3(port):
                             request = data_str.split(' ')[1][9:].split("&")
                             operands = []
                             result = 1
-
+                            isFloat = True
                             #create operands and result
                             for i in request:
-                                print(i)
-                                if i.split("=")[1].isnumeric() or i.split("=")[1].replace('.', '', 1).isdigit():
-
+                                try:
+                                    print(i.split("=")[1])
                                     operands.append(i.split("=")[1])
                                     print(operands)
                                     result *= float(i.split("=")[1])
-                                else:
-                                    print("sending 400")
-                                    connection_socket.send(("HTTP/1.1 400 Bad Request\r\n\r\n").encode('utf-8'))
-                                    break
+                                    print(operands)
+                                except:
+                                    isFloat = False
+                            if not isFloat:
+                                print("sending 400")
+                                connection_socket.send(("HTTP/1.1 400 Bad Request\r\n\r\n").encode('utf-8'))
+                                break
                             dict = {}
                             dict["operation"] = "product"
                             dict["operands"] = operands
