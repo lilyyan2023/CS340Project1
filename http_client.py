@@ -31,7 +31,7 @@ def connect(name):
         sock.sendall(bytes("GET /"+content+ " HTTP/1.0\r\nHost: "+addr+"\r\n\r\n","UTF-8"))
         while(message == "" or "\r\n\r\n" not in message):
             response = sock.recv(1024)
-            message += response.decode()
+            message += response.decode("utf-8","replace")
         content_length = -1
         lst = message.split("\r\n\r\n")[0].split("\r\n")
         for i in range(0,len(lst)):
@@ -49,14 +49,14 @@ def connect(name):
                 if(size > 1024):
                     size = 1024
                 response = sock.recv(size)
-                message += response.decode()
+                message += response.decode("utf-8","replace")
         else:
             response = sock.recv(1)
             while response:
-                message += response.decode()
+                message += response.decode("utf-8","replace")
                 response = sock.recv(1)
         #response = sock.recv(header_length+len("\r\n\r\n"))
-        #message += response.decode()
+        #message += response.decode("utf-8","replace")
         location = ""
         status = message[9:12]
         if(status == "301" or status == "302"):
