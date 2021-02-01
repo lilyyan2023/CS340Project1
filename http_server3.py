@@ -53,7 +53,7 @@ def server3(port):
                         connection_socket.send(("HTTP/1.1 200 OK\r\n").encode('utf-8'))
                         connection_socket.send(("Content-Type: application/json\r\n\r\n").encode('utf-8'))
                         # do we need to encode?
-                        connection_socket.send((dict_json).encode('utf-8'))
+                        connection_socket.send(dict_json.encode('utf-8'))
                     # if after /product, there is nothing or is not a number
                     else:
                         print("sending 400")
