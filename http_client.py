@@ -28,10 +28,10 @@ def connect(name):
         message = ""
         sock = socket.socket()
         sock.connect((socket.gethostbyname(addr),port))
-        sock.sendall(bytes("GET /"+content+ " HTTP/1.0\r\nHost: "+addr+"\r\n\r\n","utf-8"))
+        sock.sendall(bytes("GET /"+content+ " HTTP/1.0\r\nHost: "+addr+"\r\n\r\n","UTF-8"))
         while(message == "" or "\r\n\r\n" not in message):
             response = sock.recv(1024)
-            message += response.decode('utf-8', 'replace')
+            message += response.decode()
         content_length = -1
         lst = message.split("\r\n\r\n")[0].split("\r\n")
         for i in range(0,len(lst)):
@@ -49,11 +49,11 @@ def connect(name):
                 if(size > 1024):
                     size = 1024
                 response = sock.recv(size)
-                message += response.decode('utf-8', 'replace')
+                message += response.decode()
         else:
             response = sock.recv(1)
             while response:
-                message += response.decode('utf-8', 'replace')
+                message += response.decode()
                 response = sock.recv(1)
         #response = sock.recv(header_length+len("\r\n\r\n"))
         #message += response.decode()
