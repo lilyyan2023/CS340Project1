@@ -51,12 +51,18 @@ def server2(port):
             else:
                 # connection_socket, client_address = r.accept()
                 data = r.recv(1024)
+                ignore = False
+                if ("GET" not in data.decode('utf-8')) or (len(data.decode('utf-8')) == 0):
+                    ignore = True
                 # print(data)
-                if data:
+                if data and not ignore:
                     print("the data that is stuck is "+str(data))
                     message_queues[r].put(data)
                     if r not in outputs:
                         outputs.append(r)
+                elif ignore:
+                    read_list.remove(r)
+                    r.close();
                 else:
                     #if r in outputs:
                         #outputs.remove(r)
