@@ -60,9 +60,9 @@ def server2(port):
                     message_queues[r].put(data)
                     if r not in outputs:
                         outputs.append(r)
-                elif ignore:
-                    read_list.remove(r)
-                    r.close();
+                #elif ignore:
+                    #read_list.remove(r)
+                    #r.close();
                 else:
                     #if r in outputs:
                         #outputs.remove(r)
