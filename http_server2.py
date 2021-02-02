@@ -54,6 +54,7 @@ def server2(port):
                 ignore = False
                 if ("GET" not in data.decode('utf-8')) or (len(data.decode('utf-8')) == 0):
                     ignore = True
+                print("ignore is" + str(ignore) )
                 # print(data)
                 if data and not ignore:
                     print("the data that is stuck is "+str(data))
